@@ -11,35 +11,39 @@ client.on("error", error => {
    console.log(error);
    return;
 });
-client.on("messageCreate", async message => {
-   if (message.author.bot) return;
-   if (message.content.toLowerCase() === "ping") {
-      message.reply("The **API** ping is " + "`" + client.ws.ping + "ms`. " + `The **message** ping is ` + "`" + (Date.now() - message.createdTimestamp) + "ms`.")
-   };
-   if (message.content.toLowerCase().startsWith(config.prefix + "e")) {
-      const args = message.content.split(" ").slice(1);
-      if (message.author.id !== config.ownerID) return;
-      const content = message.content.split(' ').slice(1).join(' ');
-      const result = new Promise((resolve, reject) => resolve(eval(content)));
-      return result.then(output => {
-         if (typeof output !== 'string') output = require('util').inspect(output, {
-            depth: 0
-         });
-         if (output.includes(client.token)) output = output.replace(client.token, '[Woah, umm, nope]');
-         if (output.length > 1990) console.log(output), output = 'Too long to be printed (content got console logged)';
-         return message.channel.send(output, {
-            code: 'js'
-         });
-      }).catch(err => {
-         console.error(err);
-         err = err.toString();
-         if (err.includes(client.token)) err = err.replace(client.token, '[Woah, umm, nope]');
-         return message.channel.send(err, {
-            code: 'js'
-         });
-      });
-   };
-});
+
+// debug code
+
+// client.on("messageCreate", async message => {
+//    if (message.author.bot) return;
+//    if (message.content.toLowerCase() === "ping") {
+//       message.reply("The **API** ping is " + "`" + client.ws.ping + "ms`. " + `The **message** ping is ` + "`" + (Date.now() - message.createdTimestamp) + "ms`.")
+//    };
+//    if (message.content.toLowerCase().startsWith(config.prefix + "e")) {
+//       const args = message.content.split(" ").slice(1);
+//       if (message.author.id !== config.ownerID) return;
+//       const content = message.content.split(' ').slice(1).join(' ');
+//       const result = new Promise((resolve, reject) => resolve(eval(content)));
+//       return result.then(output => {
+//          if (typeof output !== 'string') output = require('util').inspect(output, {
+//             depth: 0
+//          });
+//          if (output.includes(client.token)) output = output.replace(client.token, '[Woah, umm, nope]');
+//          if (output.length > 1990) console.log(output), output = 'Too long to be printed (content got console logged)';
+//          return message.channel.send(output, {
+//             code: 'js'
+//          });
+//       }).catch(err => {
+//          console.error(err);
+//          err = err.toString();
+//          if (err.includes(client.token)) err = err.replace(client.token, '[Woah, umm, nope]');
+//          return message.channel.send(err, {
+//             code: 'js'
+//          });
+//       });
+//    };
+// });
+
 client.on("messageCreate", async message => {
    if (message.author.bot) return;
    if (message.member.voice.channel == null) {
@@ -57,11 +61,14 @@ client.on("messageCreate", async message => {
    const subscription = connection.subscribe(player);
    if (message.content.toLowerCase() === "microwave") {
       player.play(createAudioResource('./audio/microwave.wav'));
+      console.log(`${message.author.tag} is using the microwave.`)
       message.reply("Microwaving your food...");
    };
    player.on(AudioPlayerStatus.Idle, () => {
       player.stop();
       connection.destroy();
+      message.reply("Your food is done!");
+      console.log(`${message.author.tag} is done using the microwave.`)
    });
    player.on('error', error => {
       console.error(`Error: ${error.message} with resource ${error.resource.metadata.title}`);
