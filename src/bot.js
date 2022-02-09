@@ -55,7 +55,7 @@ client.on("messageCreate", async message => {
    });
    const player = createAudioPlayer();
    const subscription = connection.subscribe(player);
-   if (message.content.toLowerCase() === "play") {
+   if (message.content.toLowerCase() === "microwave") {
       player.play(createAudioResource('./audio/microwave.wav'));
       message.reply("Microwaving your food...");
    };
